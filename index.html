@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Pixel Runner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #333;
+            font-family: 'Press Start 2P', cursive;
+            color: #eee;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background-color: #1a1a1a;
+            border: 5px solid #555;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90vw;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #00ffff;
+            text-shadow: 2px 2px #00aaff;
+            margin-bottom: 20px;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            text-align: center;
+        }
+
+        canvas {
+            background-color: #777; /* Background color for the game area */
+            display: block;
+            border: 2px solid #555;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 400px; /* Max width, making it taller for vertical play */
+            height: 600px; /* Taller height */
+            image-rendering: pixelated;
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px; /* Adjust max-width to match canvas */
+            margin-bottom: 15px;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+        }
+
+        .controls {
+            font-size: clamp(0.7rem, 2vw, 1rem);
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 4px solid #00ffff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            max-width: 90%;
+        }
+
+        .message-box h2 {
+            color: #ff00ff;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            margin-bottom: 10px;
+        }
+
+        .message-box p {
+            color: #eee;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #00ffff;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            cursor: pointer;
+            box-shadow: 0 5px 0 #00aaff;
+            transition: all 0.1s ease;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #00e0e0;
+            box-shadow: 0 3px 0 #009999;
+            transform: translateY(2px);
+        }
+
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #009999;
+        }
+
+        @media (max-width: 600px) {
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Vertical Runner</h1>
+        <div class="game-info">
+            <div id="scoreDisplay">Score: 0</div>
+            <div id="highScoreDisplay">High Score: 0</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="controls">
+            Press LEFT/RIGHT ARROW keys or A/D to move!
+        </div>
+        <button id="startButton">Start Game</button>
+    </div>
+
+    <div id="messageBox" class="message-box">
+        <h2 id="messageTitle">Game Over!</h2>
+        <p id="messageText">Your score: <span id="finalScore">0</span></p>
+        <button id="restartButton">Play Again</button>
+    </div>
+
+    <script>
+        // Get canvas and its 2D rendering context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Get UI elements
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const startButton = document.getElementById('startButton');
+        const messageBox = document.getElementById('messageBox');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageText = document.getElementById('messageText');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+
+        // Game constants
+        const GAME_WIDTH = 400; // Canvas width
+        const GAME_HEIGHT = 600; // Canvas height (taller for vertical play)
+        const PLAYER_WIDTH = 40; // Width of the player character
+        const PLAYER_HEIGHT = 20; // Height of the player character
+        const PLAYER_SPEED = 5; // Horizontal movement speed of the player
+        const OBSTACLE_SPEED = 2; // Speed at which obstacles fall downwards
+        const OBSTACLE_MIN_GAP_Y = 150; // Minimum vertical distance between obstacle spawn points
+        const OBSTACLE_MAX_GAP_Y = 300; // Maximum vertical distance between obstacle spawn points
+        const OBSTACLE_WIDTH = 30; // Width of obstacles
+        const OBSTACLE_HEIGHT = 50; // Height of obstacles (now they are vertical)
+
+        // Game state variables
+        let player = {};
+        let obstacles = [];
+        let score = 0;
+        let highScore = localStorage.getItem('verticalRunnerHighScore') || 0; // Separate high score for vertical game
+        let gameRunning = false;
+        let animationFrameId; // To store the requestAnimationFrame ID
+        let keysPressed = {}; // To track currently pressed keys for smooth movement
+
+        /**
+         * Initializes the game state and UI.
+         */
+        function initializeGame() {
+            // Set canvas dimensions based on constants
+            canvas.width = GAME_WIDTH;
+            canvas.height = GAME_HEIGHT;
+
+            // Initialize player properties, player is at a fixed Y near the bottom
+            player = {
+                x: (GAME_WIDTH / 2) - (PLAYER_WIDTH / 2), // Start in the middle horizontally
+                y: GAME_HEIGHT - PLAYER_HEIGHT - 20, // Fixed position near bottom
+                dx: 0, // Horizontal velocity
+                width: PLAYER_WIDTH,
+                height: PLAYER_HEIGHT,
+            };
+
+            obstacles = []; // Clear any existing obstacles
+            score = 0; // Reset score
+            scoreDisplay.textContent = `Score: ${score}`; // Update score display
+            highScoreDisplay.textContent = `High Score: ${highScore}`; // Update high score display
+            messageBox.style.display = 'none'; // Hide message box
+            startButton.style.display = 'block'; // Show start button
+            drawGame(); // Draw initial game state
+        }
+
+        /**
+         * Resets the game to its initial state and starts it.
+         */
+        function startGame() {
+            gameRunning = true; // Set game state to running
+            startButton.style.display = 'none'; // Hide start button
+            messageBox.style.display = 'none'; // Ensure message box is hidden
+            score = 0; // Reset score
+            scoreDisplay.textContent = `Score: ${score}`;
+            highScoreDisplay.textContent = `High Score: ${highScore}`;
+
+            player = {
+                x: (GAME_WIDTH / 2) - (PLAYER_WIDTH / 2),
+                y: GAME_HEIGHT - PLAYER_HEIGHT - 20,
+                dx: 0,
+                width: PLAYER_WIDTH,
+                height: PLAYER_HEIGHT,
+            };
+            obstacles = [];
+            lastObstacleY = -OBSTACLE_MAX_GAP_Y; // Position for the first obstacle to spawn above canvas
+
+            // Clear any lingering key presses
+            keysPressed = {};
+
+            // Start the game loop
+            animate();
+        }
+
+        /**
+         * Displays the game over screen.
+         */
+        function gameOver() {
+            gameRunning = false; // Stop the game
+            cancelAnimationFrame(animationFrameId); // Stop the animation loop
+
+            // Update high score if current score is higher
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('verticalRunnerHighScore', highScore); // Save new high score
+                highScoreDisplay.textContent = `High Score: ${highScore}`; // Update high score display
+                messageTitle.textContent = "New High Score!";
+            } else {
+                messageTitle.textContent = "Game Over!";
+            }
+            finalScoreDisplay.textContent = score; // Display final score
+            messageBox.style.display = 'flex'; // Show message box
+        }
+
+        /**
+         * Draws the game elements on the canvas.
+         */
+        function drawGame() {
+            // Clear the entire canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player
+            ctx.fillStyle = '#00ffff'; // Cyan for player
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw obstacles
+            ctx.fillStyle = '#ff00ff'; // Magenta for obstacles
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        /**
+         * Updates game logic: player movement, obstacle movement, collision, score.
+         */
+        let lastObstacleY = -OBSTACLE_MAX_GAP_Y; // To track where the last obstacle's bottom edge is (above canvas)
+
+        function updateGame() {
+            // Update player horizontal position based on keys pressed
+            if (keysPressed['ArrowLeft'] || keysPressed['a']) {
+                player.x -= PLAYER_SPEED;
+            }
+            if (keysPressed['ArrowRight'] || keysPressed['d']) {
+                player.x += PLAYER_SPEED;
+            }
+
+            // Keep player within canvas bounds
+            if (player.x < 0) {
+                player.x = 0;
+            }
+            if (player.x + player.width > canvas.width) {
+                player.x = canvas.width - player.width;
+            }
+
+            // Move obstacles and remove off-screen obstacles
+            obstacles.forEach((obstacle, index) => {
+                obstacle.y += OBSTACLE_SPEED; // Obstacles move downwards
+
+                // Remove obstacle if it's off-screen to the bottom
+                if (obstacle.y > canvas.height) {
+                    obstacles.splice(index, 1);
+                    score++; // Increase score when an obstacle is successfully passed
+                    scoreDisplay.textContent = `Score: ${score}`;
+                }
+
+                // Collision detection
+                if (
+                    player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y
+                ) {
+                    gameOver(); // Game over on collision
+                }
+            });
+
+            // Generate new obstacles
+            // Only generate if the last obstacle has moved far enough down or there are no obstacles
+            if (obstacles.length === 0 || obstacles[obstacles.length - 1].y > lastObstacleY + OBSTACLE_MIN_GAP_Y) {
+                // Determine next obstacle's spawn Y coordinate, ensuring a vertical gap
+                const newObstacleY = obstacles.length === 0 ? -OBSTACLE_HEIGHT : obstacles[obstacles.length - 1].y - OBSTACLE_HEIGHT - (Math.random() * (OBSTACLE_MAX_GAP_Y - OBSTACLE_MIN_GAP_Y) + OBSTACLE_MIN_GAP_Y);
+
+                // Obstacles can appear at any random X position
+                const newObstacleX = Math.random() * (GAME_WIDTH - OBSTACLE_WIDTH);
+
+                obstacles.push({
+                    x: newObstacleX,
+                    y: newObstacleY,
+                    width: OBSTACLE_WIDTH,
+                    height: OBSTACLE_HEIGHT,
+                });
+                lastObstacleY = newObstacleY; // Update last obstacle's top Y position
+            }
+        }
+
+        /**
+         * The main game animation loop.
+         */
+        function animate() {
+            if (!gameRunning) return; // Stop if game is not running
+
+            updateGame(); // Update game logic
+            drawGame(); // Redraw game elements
+
+            // Request next animation frame
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame); // Start game button
+        restartButton.addEventListener('click', startGame); // Restart game button
+
+        // Keyboard input for movement
+        document.addEventListener('keydown', (e) => {
+            if (gameRunning && (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'KeyA' || e.code === 'KeyD')) {
+                keysPressed[e.code] = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'KeyA' || e.code === 'KeyD') {
+                keysPressed[e.code] = false;
+            }
+        });
+
+        // Initialize the game when the window loads
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
+
