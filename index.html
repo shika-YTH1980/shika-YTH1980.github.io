@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vertical Pixel Runner</title>
+    <title>Gokitchi v1 Cockroach Runner</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
@@ -27,47 +27,47 @@
             border: 5px solid #555;
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
-            padding: 20px;
+            padding: 15px; /* Slightly reduced padding */
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 90vw;
+            max-width: 95vw; /* Better fit for small screens */
             margin-bottom: 20px;
         }
 
         h1 {
             color: #00ffff;
             text-shadow: 2px 2px #00aaff;
-            margin-bottom: 20px;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 15px; /* Reduced margin-bottom for title */
+            font-size: clamp(1.2rem, 4vw, 2rem); /* Smaller responsive font size */
             text-align: center;
         }
 
         canvas {
-            background-color: #777; /* Background color for the game area */
+            background-color: #777; /* Game background color */
             display: block;
             border: 2px solid #555;
             border-radius: 4px;
             width: 100%;
-            max-width: 400px; /* Max width, making it taller for vertical play */
-            height: 600px; /* Taller height */
-            image-rendering: pixelated;
-            margin-bottom: 20px;
+            max-width: 200px; /* Tamagotchi-style width */
+            height: 300px; /* Tamagotchi-style height */
+            image-rendering: pixelated; /* Ensures pixel art stays sharp */
+            margin-bottom: 15px; /* Reduced margin-bottom for canvas */
         }
 
         .game-info {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            max-width: 400px; /* Adjust max-width to match canvas */
-            margin-bottom: 15px;
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            max-width: 200px; /* Matches canvas width */
+            margin-bottom: 10px; /* Reduced margin-bottom for info */
+            font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller font size */
         }
 
         .controls {
-            font-size: clamp(0.7rem, 2vw, 1rem);
+            font-size: clamp(0.6rem, 2vw, 0.9rem); /* Smaller font size */
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Reduced margin-bottom for controls */
             color: #ccc;
         }
 
@@ -79,81 +79,81 @@
             background-color: rgba(0, 0, 0, 0.9);
             border: 4px solid #00ffff;
             border-radius: 10px;
-            padding: 30px;
+            padding: 20px; /* Reduced padding */
             text-align: center;
             z-index: 1000;
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            max-width: 90%;
+            gap: 15px; /* Reduced element spacing */
+            max-width: 80%; /* Responsive width */
         }
 
         .message-box h2 {
             color: #ff00ff;
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            margin-bottom: 10px;
+            font-size: clamp(1.5rem, 4vw, 2.5rem); /* Smaller responsive font size */
+            margin-bottom: 8px;
         }
 
         .message-box p {
             color: #eee;
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            margin-bottom: 20px;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem); /* Smaller responsive font size */
+            margin-bottom: 15px;
         }
 
         button {
             background-color: #00ffff;
             color: #1a1a1a;
             border: none;
-            border-radius: 8px;
-            padding: 12px 25px;
+            border-radius: 6px; /* Slightly smaller border-radius */
+            padding: 10px 20px; /* Reduced button padding */
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            font-size: clamp(0.8rem, 2vw, 1rem); /* Smaller responsive font size */
             cursor: pointer;
-            box-shadow: 0 5px 0 #00aaff;
+            box-shadow: 0 4px 0 #00aaff; /* Smaller shadow */
             transition: all 0.1s ease;
             outline: none;
         }
 
         button:hover {
             background-color: #00e0e0;
-            box-shadow: 0 3px 0 #009999;
+            box-shadow: 0 2px 0 #009999;
             transform: translateY(2px);
         }
 
         button:active {
-            transform: translateY(5px);
+            transform: translateY(4px); /* Reduced press displacement */
             box-shadow: 0 0 0 #009999;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 400px) {
             .game-info {
                 flex-direction: column;
                 align-items: center;
-                gap: 5px;
+                gap: 3px;
             }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>Vertical Runner</h1>
+        <h1>Gokitchi v1</h1>
         <div class="game-info">
             <div id="scoreDisplay">Score: 0</div>
-            <div id="highScoreDisplay">High Score: 0</div>
+            <div id="highScoreDisplay">Highest: 0</div>
         </div>
         <canvas id="gameCanvas"></canvas>
         <div class="controls">
-            Press LEFT/RIGHT ARROW keys or A/D to move!
+            Use LEFT/RIGHT ARROW keys to move!<br>Press C to restart!
         </div>
-        <button id="startButton">Start Game</button>
+        <button id="startButton">START</button>
     </div>
 
     <div id="messageBox" class="message-box">
-        <h2 id="messageTitle">Game Over!</h2>
-        <p id="messageText">Your score: <span id="finalScore">0</span></p>
-        <button id="restartButton">Play Again</button>
+        <h2 id="messageTitle">GAME OVER!</h2>
+        <p id="messageText">Your Score: <span id="finalScore">0</span></p>
+        <button id="restartButton">PLAY AGAIN</button>
     </div>
 
     <script>
@@ -171,23 +171,24 @@
         const finalScoreDisplay = document.getElementById('finalScore');
         const restartButton = document.getElementById('restartButton');
 
-        // Game constants
-        const GAME_WIDTH = 400; // Canvas width
-        const GAME_HEIGHT = 600; // Canvas height (taller for vertical play)
-        const PLAYER_WIDTH = 40; // Width of the player character
-        const PLAYER_HEIGHT = 20; // Height of the player character
-        const PLAYER_SPEED = 5; // Horizontal movement speed of the player
-        const OBSTACLE_SPEED = 2; // Speed at which obstacles fall downwards
-        const OBSTACLE_MIN_GAP_Y = 150; // Minimum vertical distance between obstacle spawn points
-        const OBSTACLE_MAX_GAP_Y = 300; // Maximum vertical distance between obstacle spawn points
-        const OBSTACLE_WIDTH = 30; // Width of obstacles
-        const OBSTACLE_HEIGHT = 50; // Height of obstacles (now they are vertical)
+        // Game constants (adjusted for Tamagotchi style)
+        const GAME_WIDTH = 200; // Canvas width
+        const GAME_HEIGHT = 300; // Canvas height (increased for vertical gameplay)
+        const PLAYER_WIDTH = 20; // Player character width
+        const PLAYER_HEIGHT = 10; // Player character height
+        const PLAYER_SPEED = 2.5; // Player horizontal movement speed
+        const PLAYER_BASE_Y = GAME_HEIGHT - PLAYER_HEIGHT - 10; // Base Y position for the player (ground)
+        const OBSTACLE_SPEED = 1; // Speed at which obstacles fall downwards
+        const OBSTACLE_MIN_GAP_Y = 75; // Minimum vertical distance between obstacle spawn points
+        const OBSTACLE_MAX_GAP_Y = 150; // Maximum vertical distance between obstacle spawn points
+        const OBSTACLE_WIDTH = 15; // Width of obstacles
+        const OBSTACLE_HEIGHT = 25; // Height of obstacles
 
         // Game state variables
         let player = {};
         let obstacles = [];
         let score = 0;
-        let highScore = localStorage.getItem('verticalRunnerHighScore') || 0; // Separate high score for vertical game
+        let highScore = localStorage.getItem('verticalRunnerHighScoreTamagotchi') || 0; // Use a different high score key for Tamagotchi version
         let gameRunning = false;
         let animationFrameId; // To store the requestAnimationFrame ID
         let keysPressed = {}; // To track currently pressed keys for smooth movement
@@ -196,14 +197,14 @@
          * Initializes the game state and UI.
          */
         function initializeGame() {
-            // Set canvas dimensions based on constants
+            // Set canvas dimensions
             canvas.width = GAME_WIDTH;
             canvas.height = GAME_HEIGHT;
 
-            // Initialize player properties, player is at a fixed Y near the bottom
+            // Initialize player properties
             player = {
-                x: (GAME_WIDTH / 2) - (PLAYER_WIDTH / 2), // Start in the middle horizontally
-                y: GAME_HEIGHT - PLAYER_HEIGHT - 20, // Fixed position near bottom
+                x: (GAME_WIDTH / 2) - (PLAYER_WIDTH / 2), // Start horizontally centered
+                y: PLAYER_BASE_Y, // Player is fixed on the base ground
                 dx: 0, // Horizontal velocity
                 width: PLAYER_WIDTH,
                 height: PLAYER_HEIGHT,
@@ -212,7 +213,7 @@
             obstacles = []; // Clear any existing obstacles
             score = 0; // Reset score
             scoreDisplay.textContent = `Score: ${score}`; // Update score display
-            highScoreDisplay.textContent = `High Score: ${highScore}`; // Update high score display
+            highScoreDisplay.textContent = `Highest: ${highScore}`; // Update high score display
             messageBox.style.display = 'none'; // Hide message box
             startButton.style.display = 'block'; // Show start button
             drawGame(); // Draw initial game state
@@ -227,17 +228,17 @@
             messageBox.style.display = 'none'; // Ensure message box is hidden
             score = 0; // Reset score
             scoreDisplay.textContent = `Score: ${score}`;
-            highScoreDisplay.textContent = `High Score: ${highScore}`;
+            highScoreDisplay.textContent = `Highest: ${highScore}`;
 
             player = {
                 x: (GAME_WIDTH / 2) - (PLAYER_WIDTH / 2),
-                y: GAME_HEIGHT - PLAYER_HEIGHT - 20,
+                y: PLAYER_BASE_Y, // Player fixed at base
                 dx: 0,
                 width: PLAYER_WIDTH,
                 height: PLAYER_HEIGHT,
             };
             obstacles = [];
-            lastObstacleY = -OBSTACLE_MAX_GAP_Y; // Position for the first obstacle to spawn above canvas
+            lastObstacleY = -OBSTACLE_MAX_GAP_Y; // First obstacle spawns above canvas
 
             // Clear any lingering key presses
             keysPressed = {};
@@ -256,11 +257,11 @@
             // Update high score if current score is higher
             if (score > highScore) {
                 highScore = score;
-                localStorage.setItem('verticalRunnerHighScore', highScore); // Save new high score
-                highScoreDisplay.textContent = `High Score: ${highScore}`; // Update high score display
-                messageTitle.textContent = "New High Score!";
+                localStorage.setItem('verticalRunnerHighScoreTamagotchi', highScore); // Save new high score
+                highScoreDisplay.textContent = `Highest: ${highScore}`; // Update high score display
+                messageTitle.textContent = "NEW HIGH SCORE!";
             } else {
-                messageTitle.textContent = "Game Over!";
+                messageTitle.textContent = "GAME OVER!";
             }
             finalScoreDisplay.textContent = score; // Display final score
             messageBox.style.display = 'flex'; // Show message box
@@ -273,12 +274,24 @@
             // Clear the entire canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw player
-            ctx.fillStyle = '#00ffff'; // Cyan for player
+            // Draw player (cockroach body)
+            ctx.fillStyle = '#6F4E37'; // Cockroach brown color
             ctx.fillRect(player.x, player.y, player.width, player.height);
 
+            // Draw antennae (two small lines/rectangles above the player)
+            ctx.fillStyle = '#6F4E37'; // Antennae color (same as body)
+            const antennaHeight = 8;
+            const antennaWidth = 1; // Very thin
+            const antennaOffset = 3; // Offset from player's side
+
+            // Left antenna
+            ctx.fillRect(player.x + antennaOffset, player.y - antennaHeight, antennaWidth, antennaHeight);
+            // Right antenna
+            ctx.fillRect(player.x + player.width - antennaOffset - antennaWidth, player.y - antennaHeight, antennaWidth, antennaHeight);
+
+
             // Draw obstacles
-            ctx.fillStyle = '#ff00ff'; // Magenta for obstacles
+            ctx.fillStyle = '#000000'; // Obstacle black color
             obstacles.forEach(obstacle => {
                 ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             });
@@ -287,24 +300,27 @@
         /**
          * Updates game logic: player movement, obstacle movement, collision, score.
          */
-        let lastObstacleY = -OBSTACLE_MAX_GAP_Y; // To track where the last obstacle's bottom edge is (above canvas)
+        let lastObstacleY = -OBSTACLE_MAX_GAP_Y; // To track the bottom edge of the last obstacle (above canvas)
 
         function updateGame() {
             // Update player horizontal position based on keys pressed
-            if (keysPressed['ArrowLeft'] || keysPressed['a']) {
+            if (keysPressed['ArrowLeft']) { // Left Arrow key
                 player.x -= PLAYER_SPEED;
             }
-            if (keysPressed['ArrowRight'] || keysPressed['d']) {
+            if (keysPressed['ArrowRight']) { // Right Arrow key
                 player.x += PLAYER_SPEED;
             }
 
-            // Keep player within canvas bounds
+            // Confine player within canvas boundaries horizontally
             if (player.x < 0) {
                 player.x = 0;
             }
             if (player.x + player.width > canvas.width) {
                 player.x = canvas.width - player.width;
             }
+
+            // Player's Y position is fixed, no vertical movement (no jump/gravity)
+            player.y = PLAYER_BASE_Y;
 
             // Move obstacles and remove off-screen obstacles
             obstacles.forEach((obstacle, index) => {
@@ -329,7 +345,7 @@
             });
 
             // Generate new obstacles
-            // Only generate if the last obstacle has moved far enough down or there are no obstacles
+            // Generate only if the last obstacle has moved far enough down or there are no obstacles
             if (obstacles.length === 0 || obstacles[obstacles.length - 1].y > lastObstacleY + OBSTACLE_MIN_GAP_Y) {
                 // Determine next obstacle's spawn Y coordinate, ensuring a vertical gap
                 const newObstacleY = obstacles.length === 0 ? -OBSTACLE_HEIGHT : obstacles[obstacles.length - 1].y - OBSTACLE_HEIGHT - (Math.random() * (OBSTACLE_MAX_GAP_Y - OBSTACLE_MIN_GAP_Y) + OBSTACLE_MIN_GAP_Y);
@@ -362,18 +378,34 @@
 
         // Event Listeners
         startButton.addEventListener('click', startGame); // Start game button
-        restartButton.addEventListener('click', startGame); // Restart game button
+        restartButton.addEventListener('click', startGame); // Restart game button (also for C key)
 
-        // Keyboard input for movement
+        // Keyboard input for movement and C key (return/restart)
         document.addEventListener('keydown', (e) => {
-            if (gameRunning && (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'KeyA' || e.code === 'KeyD')) {
-                keysPressed[e.code] = true;
+            if (gameRunning) {
+                if (e.code === 'ArrowLeft') { // Left Arrow key
+                    keysPressed['ArrowLeft'] = true;
+                } else if (e.code === 'ArrowRight') { // Right Arrow key
+                    keysPressed['ArrowRight'] = true;
+                } else if (e.code === 'KeyC') { // C button / Return/Restart
+                    if (messageBox.style.display === 'flex') { // If game over screen is shown
+                        restartButton.click();
+                    } else { // If game is running, act as a 'return' to start, though current game has no explicit pause menu
+                        gameOver(); // End current game to show game over screen, from which restart is possible
+                    }
+                }
+            } else { // If game is not running (e.g., at start screen or game over screen)
+                if (e.code === 'KeyC') {
+                    startButton.click(); // 'C' button acts as START/PLAY AGAIN
+                }
             }
         });
 
         document.addEventListener('keyup', (e) => {
-            if (e.code === 'ArrowLeft' || e.code === 'ArrowRight' || e.code === 'KeyA' || e.code === 'KeyD') {
-                keysPressed[e.code] = false;
+            if (e.code === 'ArrowLeft') {
+                keysPressed['ArrowLeft'] = false;
+            } else if (e.code === 'ArrowRight') {
+                keysPressed['ArrowRight'] = false;
             }
         });
 
